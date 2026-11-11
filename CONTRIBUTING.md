@@ -1,18 +1,22 @@
-# 贡献指南
+# Contributing
 
-欢迎通过 GitHub Issue 报告问题，或提交 Pull Request。
+[English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md)
 
-## 报告问题
+Report bugs through GitHub Issues or submit a pull request.
 
-请提供 macOS 版本、CPU 架构、客户端及版本、触发事件、预期和实际行为，以及脱敏后的相关日志。请勿上传完整会话 transcript、个人配置、令牌或私有项目内容。
+## Reporting bugs
 
-## 修改和验证
+Include your macOS version, CPU architecture, client and version, triggering event, expected and actual behavior, and relevant logs with private information removed. Do not upload complete session transcripts, personal configurations, tokens, or private project content.
 
-1. 保持 Claude 与 Codex 独立安装，保留无关 hook 和用户设置。
-2. 修改事件分类或配置合并逻辑时，补充相应回归用例。
-3. 在 macOS 上运行 `make test`。
-4. 涉及动画或客户端集成时，另外手动验证三种效果、焦点和鼠标穿透；在 PR 中区分自动测试结果与手动验证结果。
+## Making and verifying changes
 
-构建和测试不需要修改真实的 `~/.claude` 或 `~/.codex` 配置。请勿将本地备份、日志、构建产物或客户端配置提交到仓库。
+1. Keep Claude and Codex installations independent, and preserve unrelated hooks and user settings.
+2. Add regression cases when changing event classification or configuration merging.
+3. Run `make test` on macOS.
+4. For animation or client integration changes, also manually verify all three effects, keyboard focus, and click-through behavior. Distinguish automated test results from manual verification in your PR.
 
-提交贡献即表示你同意以本项目的 MIT 许可证发布贡献。
+Building and testing do not require changes to your real `~/.claude` or `~/.codex` configuration. Do not commit local backups, logs, build artifacts, or client configurations.
+
+Keep the [English](README.md) and [Simplified Chinese](README.zh-CN.md) documentation consistent when documenting behavior changes.
+
+By submitting a contribution, you agree to make it available under this project's MIT license.

@@ -1,32 +1,32 @@
 # AgentGlow
 
-用屏幕边缘光效提醒你：**任务完成、等待决定、方案就绪**。
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-A lightweight, native macOS screen-edge notification tool for Claude Code and Codex, written in Swift and AppKit.
+Native macOS screen-edge glow notifications for **completed tasks, decisions that need your input, and plans ready for review** in Claude Code and Codex.
 
-[MIT License](LICENSE) · [贡献指南](CONTRIBUTING.md)
+Built with Swift and AppKit. [MIT License](LICENSE) · [Contributing](CONTRIBUTING.md)
 
-## 效果
+## Effects
 
-| 状态 | 光效 | 标签 | 时长 |
+| State | Effect | On-screen label | Duration |
 |---|---|---|---|
-| `done` | 绿色淡入、淡出 | ✓ 完成 · 项目名 | 2.0 秒 |
-| `decision` | 琥珀色呼吸两次 | ? 等你决定 · 项目名 | 2.8 秒 |
-| `plan` | 蓝紫色光带扫过顶边，再淡出 | ✦ 方案就绪 · 项目名 | 2.6 秒 |
+| `done` | Green fade in and out | ✓ 完成 · project name | 2.0 seconds |
+| `decision` | Two amber pulses | ? 等你决定 · project name | 2.8 seconds |
+| `plan` | A blue-purple sweep along the top edge, followed by a fade | ✦ 方案就绪 · project name | 2.6 seconds |
 
-- 鼠标穿透、不抢键盘焦点，不打断输入。
-- 使用临时透明窗口绘制，不经过通知中心。
-- 没有常驻守护进程；hook 负责分类，独立进程播放动画后退出。
-- Claude 和 Codex 独立安装，可以同时使用。
-- Claude 默认只在主屏幕显示，且 Claude 桌面 App 在前台时静默；Codex 在所有连接的屏幕上显示，也不因处于前台而静默。
-- 界面标签目前为中文，可在 Swift 源码的 `Kind.title` 中修改。
+- Click-through overlays that never take keyboard focus or interrupt typing.
+- Temporary transparent windows, independent of Notification Center.
+- No persistent daemon: a hook classifies the event, then a separate process plays the animation and exits.
+- Independent Claude and Codex installations that can run alongside each other.
+- Claude uses the primary display and stays quiet when the Claude desktop app is in the foreground. Codex uses all connected displays and also shows effects when it is in the foreground.
+- On-screen labels are currently in Chinese. Edit `Kind.title` in the Swift sources to change them.
 
-## 环境要求
+## Requirements
 
-- macOS 图形桌面环境，依赖系统 AppKit；不支持 Linux、Windows 或无桌面的服务器。
-- Swift 编译器：安装 Xcode Command Line Tools 或 Xcode。
-- Python 3：用于合并 JSON hook 配置和运行测试，无第三方 Python 依赖。
-- 对应客户端需支持本文列出的 hook 事件。不同客户端版本的 hook 覆盖范围可能不同。
+- A macOS graphical desktop session. AppKit is required; Linux, Windows, and headless servers are not supported.
+- A Swift compiler from Xcode Command Line Tools or Xcode.
+- Python 3 for merging JSON hook configurations and running tests. No third-party Python packages are required.
+- A client that supports the hook events listed below. Hook coverage may vary between client versions.
 
 ```bash
 xcode-select --install
@@ -34,32 +34,32 @@ swiftc --version
 python3 --version
 ```
 
-程序在本机编译为当前架构，不需要下载预编译二进制。当前本地构建验证环境为 Apple Silicon；GitHub Actions 使用 `macos-latest`。
+The executables are compiled locally for your machine's architecture; no prebuilt binaries are downloaded. Local builds have been verified on Apple Silicon. GitHub Actions uses `macos-latest`.
 
-## 安装
+## Installation
 
-从本仓库的 GitHub 页面克隆仓库或下载 ZIP，解压并进入项目目录。按需执行：
+Clone this repository or download and extract its ZIP archive, then enter the project directory. Install either or both integrations:
 
 ```bash
-# Claude Code（包括支持 Code hooks 的桌面端 Code 会话）
+# Claude Code, including desktop Code sessions that support Code hooks
 ./install.sh
 
 # Codex
 ./install-codex.sh
 ```
 
-无需 `sudo`。安装脚本会先校验配置，再编译程序，并合并本项目的 hook；保留其他设置、同组内的其他 handler，以及另一个客户端的 hook。重复安装可更新程序和 hook，不重复添加条目。
+No `sudo` is required. The installer validates the configuration, compiles the executable, and merges this project's hooks. It preserves other settings, unrelated handlers in the same hook group, and the other client's hooks. Reinstalling updates the executable and hooks without adding duplicate entries.
 
-| 客户端 | 二进制 | 修改的配置 | 状态与日志目录 |
+| Client | Executable | Configuration modified | State and log directory |
 |---|---|---|---|
 | Claude | `~/.claude/glow/claude-glow` | `~/.claude/settings.json` | `~/.claude/glow/` |
 | Codex | `~/.codex/glow/codex-glow` | `~/.codex/hooks.json` | `~/.codex/glow/` |
 
-已有配置和二进制在更新前会生成带时间戳的 `.bak.*` 备份。安装后新建会话以加载 hook。
+Existing configurations and executables are backed up with timestamped `.bak.*` suffixes before being updated. Start a new session after installation to load the hooks.
 
-**Codex 还需要在 `/hooks` 中检查并信任更新后的定义。** 安装脚本不修改信任记录，也不修改 `config.toml`。客户端未提供事件、未信任 hook 或未加载配置时，程序不会收到提醒事件。
+**For Codex, review and trust the updated definitions in `/hooks`.** The installer does not modify trust records or `config.toml`. Notifications require the client to emit the relevant events, trust the hooks, and load the configuration.
 
-## 手动预览
+## Manual preview
 
 ```bash
 ~/.claude/glow/claude-glow show done "My Project"
@@ -71,97 +71,97 @@ python3 --version
 ~/.codex/glow/codex-glow show plan "My Project"
 ```
 
-`show` 直接播放动画，不受 Claude 前台静默规则影响。第三个参数为可选标签；由 hook 触发时，标签取事件 `cwd` 的最后一级目录名。
+`show` plays an animation directly, bypassing Claude's foreground suppression. The third argument is an optional label. When triggered by a hook, the label is the last directory component of the event's `cwd`.
 
-## 触发规则
+## Trigger rules
 
 ### Claude Code
 
-| 事件 | 行为 |
+| Event | Behavior |
 |---|---|
-| `Stop` | 默认绿色；存在等待决定标记，或最后回复以 `?` / `？` 结尾时显示琥珀色 |
-| `PreToolUse: AskUserQuestion` | 琥珀色 |
-| `PreToolUse: ExitPlanMode` | 蓝紫色，并短暂抑制后续重复的方案审批通知 |
-| `PreToolUse: mcp__ccd_turn__wrap_up` | 有 `ask` 时记录等待决定标记，供 `Stop` 使用 |
-| `Notification` | 非 `idle_prompt` 通知显示琥珀色；方案后的重复通知除外 |
+| `Stop` | Green by default; amber if a pending-decision marker exists or the final reply ends in `?` / `？` |
+| `PreToolUse: AskUserQuestion` | Amber |
+| `PreToolUse: ExitPlanMode` | Blue-purple; briefly suppresses the subsequent duplicate plan-approval notification |
+| `PreToolUse: mcp__ccd_turn__wrap_up` | Records a pending-decision marker for `Stop` when `ask` is present |
+| `Notification` | Amber for notifications other than `idle_prompt`, except duplicate notifications following a plan |
 
-Claude 桌面 App 在前台时，hook 仍更新状态，但不播放动画。若需始终提醒，可在 `settings.json` 的 Glow hook 命令前添加 `CLAUDE_GLOW_ALWAYS=1`；重新安装会重置本项目的 hook 命令。
+When the Claude desktop app is in the foreground, hooks still update state but do not play animations. To always show effects, prefix the Glow hook commands in `settings.json` with `CLAUDE_GLOW_ALWAYS=1`. Reinstalling resets this project's hook commands.
 
 ### Codex
 
-安装以下事件：`UserPromptSubmit`、`PreToolUse`、`PostToolUse`、`PermissionRequest`、`Stop`。
+The installer registers `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PermissionRequest`, and `Stop`.
 
-| 条件 | 行为 |
+| Condition | Behavior |
 |---|---|
-| 用户轮次中有有效最终回复的普通 `Stop` | 绿色 |
-| 提问工具 `request_user_input` / `request_user_input_async` 的 `PreToolUse` | 琥珀色 |
-| `PermissionRequest` | 琥珀色 |
-| 最终回复以 `?` / `？` 结尾 | 琥珀色 |
-| 最终回复含完整、非占位的 `<proposed_plan>…</proposed_plan>` | 蓝紫色 |
+| An ordinary `Stop` with a valid final reply in a user-started turn | Green |
+| `PreToolUse` for `request_user_input` / `request_user_input_async` | Amber |
+| `PermissionRequest` | Amber |
+| A final reply ending in `?` / `？` | Amber |
+| A final reply containing a complete, non-placeholder `<proposed_plan>…</proposed_plan>` | Blue-purple |
 
-启动事件、空回复、仅 `/` 的回复不会显示完成。提问工具尚未返回时，普通 `Stop` 不显示绿色；`PostToolUse` 或新用户轮次清除等待状态。同一轮的重复 `Stop` 只提醒一次。
+Startup events, empty replies, and replies containing only `/` do not trigger completion effects. While a question tool is still waiting for a response, an ordinary `Stop` does not show green. `PostToolUse` or a new user turn clears the pending state. Duplicate `Stop` events trigger only one notification per turn.
 
-若 `Stop.last_assistant_message` 为空，程序尝试从 `transcript_path` 读取相同会话、相同轮次的最终回复。处于 Plan Mode 本身不代表方案已提交。Codex hook 返回 `{}`，不批准或拒绝工具调用。
+If `Stop.last_assistant_message` is empty, the program attempts to recover the final reply from `transcript_path`, matching both the session and turn. Being in Plan Mode alone does not mean a plan has been submitted. Codex hooks return `{}` and do not approve or reject tool calls.
 
-## 卸载
+## Uninstallation
 
 ```bash
 ./uninstall.sh        # Claude
 ./uninstall-codex.sh  # Codex
 ```
 
-卸载会先备份配置，再删除本客户端的 Glow hook，并删除对应 `glow/` 目录（含日志、状态和二进制备份）。其他 hook 与设置保留，配置备份保留在配置文件旁。已有会话可能缓存旧 hook，卸载后请新建会话。
+Uninstallation backs up the configuration, removes this client's Glow hooks, and deletes its `glow/` directory, including logs, state, and executable backups. Other hooks and settings are preserved. Configuration backups remain next to the configuration file. Start a new session afterward, as existing sessions may cache the old hooks.
 
-## 日志与排障
+## Logs and troubleshooting
 
 ```bash
 tail -n 50 ~/.claude/glow/glow.log
 tail -n 50 ~/.codex/glow/glow.log
 ```
 
-- **编译失败**：检查 `swiftc --version`，确认已安装并选中有效的 Xcode / Command Line Tools。
-- **预览正常，会话中没有提醒**：检查配置是否包含 Glow hook，并新建会话；Codex 还需检查 `/hooks` 信任状态。
-- **Claude 没有光效**：切换到其他 App 后触发事件；默认会抑制 Claude 桌面 App 前台提醒。
-- **Codex 方案未显示紫色**：检查日志中的 `classification` 和 `reason`；需要完整方案文本，或可读取且身份匹配的 transcript。
-- **配置 JSON 损坏**：安装会停止并保留原文件；修正 JSON 后重新安装。
+- **Build fails:** check `swiftc --version` and confirm that a valid Xcode or Command Line Tools installation is installed and selected.
+- **Previews work, but session events produce no effects:** check the Glow hook configuration and start a new session. In Codex, also check trust in `/hooks`.
+- **Claude shows no effect:** switch to another app before triggering the event. Effects are suppressed while the Claude desktop app is in the foreground by default.
+- **A Codex plan does not show purple:** inspect `classification` and `reason` in the log. A complete plan is required, either in the event or in a readable transcript with matching session and turn identities.
+- **Configuration JSON is invalid:** installation stops and preserves the original file. Fix the JSON and run the installer again.
 
-Codex 日志区分收到事件、分类、进程启动、窗口显示和播放结束。Claude 日志中的 `shown` 表示已尝试启动播放进程，不能单凭这一行确认动画可见。
+Codex logs distinguish event receipt, classification, process launch, window display, and playback completion. Claude's `shown` log entry means the program attempted to launch the animation process; it does not confirm that the animation was visible.
 
-本项目没有网络请求或遥测。日志包含事件、工具名和状态信息，不复制提示词、回复正文或工具参数。Codex 在本地读取 transcript 以恢复最终回复；标签可能显示项目目录名。分享日志前请自行检查内容。Claude 日志保留约 300 行，Codex 日志持续追加，可按需清理。
+The project makes no network requests and includes no telemetry. Logs contain event names, tool names, and status information, without copying prompts, reply text, or tool arguments. Codex reads transcripts locally to recover final replies, and labels may display project directory names. Review logs before sharing them. Claude keeps roughly 300 log lines; Codex appends to its log, which you can clear as needed.
 
-## 开发与测试
+## Development and testing
 
 ```bash
-make build  # 构建 build/claude-glow 和 build/codex-glow，不安装 hook
-make test   # 构建两者，运行配置测试和 Codex hook 回归测试，不播放光效
-make clean  # 删除 build/
+make build  # Build build/claude-glow and build/codex-glow without installing hooks
+make test   # Build both and run configuration and Codex hook regression tests without overlays
+make clean  # Remove build/
 ```
 
-也可单独构建：
+To build one integration:
 
 ```bash
 bash scripts/build.sh claude
 bash scripts/build.sh codex
 ```
 
-测试使用临时目录。Codex 回归测试设置 `CODEX_GLOW_HOME` 和 `CODEX_GLOW_DRY_RUN=1`，验证启动过滤、方案恢复、轮次隔离、去重和等待状态，不接触已安装的 Codex 状态。配置测试覆盖混合 handler 保留、重复安装、路径转义、备份及无效配置。
+Tests use temporary directories. Codex regression tests set `CODEX_GLOW_HOME` and `CODEX_GLOW_DRY_RUN=1` to verify startup filtering, plan recovery, turn isolation, deduplication, and pending-question state without touching installed Codex state. Configuration tests cover preservation of mixed handlers, repeated installation, path quoting, backups, and invalid configurations.
 
-这两项环境变量仅影响 Codex 程序；安装、卸载仍使用上表的默认目录。Swift 源码中的 `Kind`、`GlowView`、`edgeIntensity` 和 `sweep` 控制颜色、标签、时长、亮度和动画。修改后重新构建或安装。
+These two environment variables affect only the Codex executable. Installation and uninstallation still use the default paths listed above. `Kind`, `GlowView`, `edgeIntensity`, and `sweep` in the Swift sources control colors, labels, timing, brightness, and animation. Rebuild or reinstall after changing them.
 
 ```text
-ClaudeGlow.swift          Claude 光效和事件分类
-CodexGlow.swift           Codex 光效、事件分类和轮次状态
-install*.sh              安装入口
-uninstall*.sh            卸载入口
-scripts/build.sh         编译及嵌入 LSUIElement 元数据
-scripts/manage.sh        安装、卸载流程
-scripts/hooks.py         JSON 配置合并与备份
-tests/                   回归测试
-.github/workflows/ci.yml macOS 构建与测试
+ClaudeGlow.swift          Claude effects and event classification
+CodexGlow.swift           Codex effects, event classification, and turn state
+install*.sh              Installation entry points
+uninstall*.sh            Uninstallation entry points
+scripts/build.sh         Compilation and embedded LSUIElement metadata
+scripts/manage.sh        Installation and uninstallation workflow
+scripts/hooks.py         JSON configuration merging and backups
+tests/                   Regression tests
+.github/workflows/ci.yml macOS builds and tests
 ```
 
-自动测试不验证真实客户端事件投递或窗口的视觉效果；发布前应在目标客户端手动触发三类提醒，并检查焦点、全屏及多显示器表现。
+Automated tests do not verify real client event delivery or visual appearance. Before releasing, manually trigger all three effects in the target client and check focus, full-screen behavior, and multiple displays.
 
-## 许可证
+## License
 
-[MIT](LICENSE)。本项目为独立社区工具，与 Anthropic 或 OpenAI 无隶属关系。
+[MIT](LICENSE). This is an independent community project, unaffiliated with Anthropic or OpenAI.
