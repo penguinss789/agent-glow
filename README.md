@@ -1,4 +1,4 @@
-# Claude Glow / Codex Glow
+# AgentGlow
 
 用屏幕边缘光效提醒你：**任务完成、等待决定、方案就绪**。
 
