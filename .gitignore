@@ -1,0 +1,12 @@
+.DS_Store
+build/
+.swift-module-cache/
+__pycache__/
+*.py[cod]
+*.bak
+*.bak.*
+*.log
+.local-backups/
+.claude/
+.codex/
+HANDOFF.md
